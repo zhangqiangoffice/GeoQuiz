@@ -17,10 +17,13 @@ public class QuizActivity extends Activity {
 	private static final String TAG = "QuizActivity";
 	private static final String KEY_INDEX = "index";
 	
+	
 	private Button mTrueButton;
 	private Button mFalseButton;
 	private Button mNextButton;
 	private Button mCheatButton;
+	
+	private boolean mIsCheater;
 	
 	private TextView mQuestionTextView;
 	
@@ -43,12 +46,15 @@ public class QuizActivity extends Activity {
 		boolean answerIsTrue = mQuestionBank[mCurrentIndex].isTrueQuestion();
 		
 		int messageResId = 0;
-		if (userPressedTrue == answerIsTrue) {
-			messageResId = R.string.correct_toast;
+		if (mIsCheater) {
+			messageResId = R.string.judgment_toast;
 		} else {
-			messageResId = R.string.incorrect_toast;
+			if (userPressedTrue == answerIsTrue) {
+				messageResId = R.string.correct_toast;
+			} else {
+				messageResId = R.string.incorrect_toast;
+			}
 		}
-		
 		Toast.makeText(QuizActivity.this,
 				messageResId,
 				Toast.LENGTH_SHORT).show();
@@ -101,7 +107,9 @@ public class QuizActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(QuizActivity.this, CheatActivity.class);
-				startActivity(intent);
+				boolean answerIsTrue = mQuestionBank[mCurrentIndex].isTrueQuestion();
+				intent.putExtra(CheatActivity.EXTRA_ANSWER_IS_TRUE, answerIsTrue);
+				startActivityForResult(intent, 0);
 			}
 		});
 		
@@ -113,6 +121,14 @@ public class QuizActivity extends Activity {
 		super.onSaveInstanceState(savedInstanceState);
 		Log.i(TAG, "onSaveInstanceState");
 		savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (data == null) {
+			return;
+		}
+		mIsCheater = data.getBooleanExtra(CheatActivity.EXTRA_ANSWER_SHOWN, false);
 	}
 
 	@Override
