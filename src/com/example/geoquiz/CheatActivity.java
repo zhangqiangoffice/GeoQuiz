@@ -12,17 +12,29 @@ public class CheatActivity extends Activity {
 
 	public static final String EXTRA_ANSWER_IS_TRUE = "com.example.geoquiz.answer_is_true";
 	public static final String EXTRA_ANSWER_SHOWN = "com.example.geoquiz.answer_shown";
+	private static final String KET_ISANSWERSHOWN = "isAnswerShown";
 
 	private boolean mAnswerIsTrue;
+	private boolean mIsAnswerShown;
 	private TextView mAnswerTextView;
 	private TextView mShowSdkVersion;
 	
 	private Button mShowAnswer;
 	
 	private void setAnswerShowResult(boolean isAnswerShown) {
+		mIsAnswerShown = isAnswerShown;
 		Intent data = new Intent();
-		data.putExtra(EXTRA_ANSWER_SHOWN, isAnswerShown);
+		data.putExtra(EXTRA_ANSWER_SHOWN, mIsAnswerShown);
 		setResult(RESULT_OK, data);
+	}
+	
+	private void showAnswer() {
+		if (mAnswerIsTrue) {
+			mAnswerTextView.setText(R.string.true_button);
+		} else {
+			mAnswerTextView.setText(R.string.false_button);
+		}
+		setAnswerShowResult(true);
 	}
 	
 	@Override
@@ -30,24 +42,25 @@ public class CheatActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_cheat);
 		
-		setAnswerShowResult(false);
-		
 		mAnswerIsTrue = getIntent().getBooleanExtra(EXTRA_ANSWER_IS_TRUE, false);
 		
 		mAnswerTextView = (TextView) findViewById(R.id.answerTextView);
 		
+		setAnswerShowResult(false);
+
+		if (savedInstanceState != null) {
+			mIsAnswerShown = savedInstanceState.getBoolean(KET_ISANSWERSHOWN, false);
+			if (mIsAnswerShown) {
+				showAnswer();
+			} 
+		} 
+
 		mShowAnswer = (Button) findViewById(R.id.showAnswerButton);
 		mShowAnswer.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				if (mAnswerIsTrue) {
-					mAnswerTextView.setText(R.string.true_button);
-				} else {
-					mAnswerTextView.setText(R.string.false_button);
-				}
-				setAnswerShowResult(true);
-				
+				showAnswer();
 			}
 		});
 		
@@ -58,7 +71,7 @@ public class CheatActivity extends Activity {
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 		super.onSaveInstanceState(savedInstanceState);
-		//savedInstanceState.putBoolean(KET_ISCHEATER, value)
+		savedInstanceState.putBoolean(KET_ISANSWERSHOWN, mIsAnswerShown);
 	}
 
 }
