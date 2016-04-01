@@ -2,6 +2,7 @@ package com.example.geoquiz;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -14,6 +15,8 @@ public class CheatActivity extends Activity {
 
 	private boolean mAnswerIsTrue;
 	private TextView mAnswerTextView;
+	private TextView mShowSdkVersion;
+	
 	private Button mShowAnswer;
 	
 	private void setAnswerShowResult(boolean isAnswerShown) {
@@ -47,6 +50,9 @@ public class CheatActivity extends Activity {
 				
 			}
 		});
+		
+		mShowSdkVersion = (TextView) findViewById(R.id.showSdkVersion);
+		mShowSdkVersion.setText("API level " + Build.VERSION.SDK_INT);
 	}
 	
 	@Override
